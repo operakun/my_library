@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AmazonReviewCrawler
@@ -15,11 +8,28 @@ namespace AmazonReviewCrawler
         public gui()
         {
             InitializeComponent();
+            tbProductCode.Text = "489100455X";
         }
 
-        private void Button1_Click(object sender, EventArgs e)
+        private void BtnGetData_Click(object sender, EventArgs e)
         {
+            var clawler = new Crawler(tbProductCode.Text);
+            if (clawler.GetPageHTML() == false)
+            {
+                MessageBox.Show("商品コードのページが存在しません");
+            }
 
+            string strReviewCount = clawler.GetReviewCount();
+            if (strReviewCount == "")
+            {
+                MessageBox.Show("レビュー数を取得出来ませんでした");
+            }
+            else
+            {
+                txtReviewCount.Text = strReviewCount;
+            }
+            
         }
+
     }
 }

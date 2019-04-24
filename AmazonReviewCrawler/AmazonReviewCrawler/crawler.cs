@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
-using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using AngleSharp.Html.Parser;
 
 namespace AmazonReviewCrawler
 {
-    class Crawler
+    public class Crawler
     {
         private WebClient objWebClient;
         private string strCode;
-        private Stream streamAmazonPage;
+        private string strAmazonPageHTML;
 
         private const string amazonUrl = "http://amazon.co.jp/dp/";
         
@@ -17,7 +19,7 @@ namespace AmazonReviewCrawler
         /// constructer
         /// </summary>
         /// <returns></returns>
-        Crawler(string code)
+        public Crawler(string code)
         {
             objWebClient = new WebClient();
             strCode = code;
@@ -29,6 +31,7 @@ namespace AmazonReviewCrawler
         /// <returns>getting result boolean</returns>
         public Boolean GetPageHTML()
         {
+            if (strCode.Length == 0) return false;
             string strPageURL = amazonUrl + strCode;
 
             // try checking exist pageURL
@@ -45,10 +48,23 @@ namespace AmazonReviewCrawler
                 catch(HttpRequestException e)
                 {
                     return false;
-                }              
+                }
             }
-            streamAmazonPage = objWebClient.OpenRead(strPageURL);
+            objWebClient.Encoding = Encoding.UTF8;
+            strAmazonPageHTML = objWebClient.DownloadString(strPageURL);
             return true;
+        }
+
+        public string GetReviewCount()
+        {
+            string reviewSelecter = "#dp-summary-see-all-reviews > h2";
+
+            HtmlParser parser = new HtmlParser();
+            var htmldoc = parser.ParseDocument(strAmazonPageHTML);
+            string reviewCount = htmldoc.QuerySelector(reviewSelecter).InnerHtml;
+
+            Match re = Regex.Match(reviewCount, "^[0-9]+");
+            return re.Value;
         }
     }
 }
