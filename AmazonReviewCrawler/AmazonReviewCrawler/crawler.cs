@@ -4,14 +4,16 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using AngleSharp.Html.Parser;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AmazonReviewCrawler
 {
     public class Crawler
     {
-        private WebClient objWebClient;
         private string strCode;
         private string strAmazonPageHTML;
+        private WebClient objWebClient = new WebClient();
 
         private const string amazonUrl = "http://amazon.co.jp/dp/";
         
@@ -21,7 +23,6 @@ namespace AmazonReviewCrawler
         /// <returns></returns>
         public Crawler(string code)
         {
-            objWebClient = new WebClient();
             strCode = code;
         }
 
@@ -40,12 +41,12 @@ namespace AmazonReviewCrawler
                 try
                 {
                     var response = client.GetAsync(strPageURL).Result;
-                    if(response.StatusCode != HttpStatusCode.OK)
+                    if (response.StatusCode != HttpStatusCode.OK)
                     {
                         return false;
                     }
                 }
-                catch(HttpRequestException e)
+                catch (HttpRequestException e)
                 {
                     return false;
                 }
@@ -55,16 +56,63 @@ namespace AmazonReviewCrawler
             return true;
         }
 
-        public string GetReviewCount()
+        public string ExtractReviewCount()
         {
-            string reviewSelecter = "#dp-summary-see-all-reviews > h2";
+            const string reviewCountSelecter = "#dp-summary-see-all-reviews > h2";
+            const string reviewCountRE = "^[0-9]+";
+            return ExtractInnerHTMLFromHTMLData(strAmazonPageHTML, reviewCountSelecter, reviewCountRE);
+        }
 
+        public Dictionary<int, string> ExtractReviewStarCount()
+        {
+            string[] reviewStarCountSelecter =
+            {
+                "#histogramTable > tbody > tr:nth-child(1) > td.a-text-right.aok-nowrap > a",
+                "#histogramTable > tbody > tr:nth-child(2) > td.a-text-right.aok-nowrap > a",
+                "#histogramTable > tbody > tr:nth-child(3) > td.a-text-right.aok-nowrap > a",
+                "#histogramTable > tbody > tr:nth-child(4) > td.a-text-right.aok-nowrap > a",
+                "#histogramTable > tbody > tr:nth-child(5) > td.a-text-right.aok-nowrap > a"
+            };
+
+            Dictionary<int, string> dicReviewStarCount = new Dictionary<int, string>();
+            int counter = 5;
+            foreach(string Selecter in reviewStarCountSelecter)
+            {
+                string extractStarCount = ExtractInnerHTMLFromHTMLData(strAmazonPageHTML, Selecter);
+                if (extractStarCount == "") extractStarCount = "0%";    
+                dicReviewStarCount.Add(counter, extractStarCount);
+                counter--;
+            }
+            return dicReviewStarCount;
+        }
+
+        /// <summary>
+        /// Extrarct StringData From HTML by QuerySelecter
+        /// </summary>
+        /// <param name="targetHTML">HTMLData</param>
+        /// <param name="selecterParam">Extract Parameter</param>
+        /// <param name="REparam">(Option)Regex Parameter</param>
+        /// <returns></returns>
+        private string ExtractInnerHTMLFromHTMLData(string targetHTML, string selecterParam, string REparam = "")
+        {
             HtmlParser parser = new HtmlParser();
-            var htmldoc = parser.ParseDocument(strAmazonPageHTML);
-            string reviewCount = htmldoc.QuerySelector(reviewSelecter).InnerHtml;
+            var htmldoc = parser.ParseDocument(targetHTML);
+            var extractResult = htmldoc.QuerySelector(selecterParam);
+            string extractString = "";
 
-            Match re = Regex.Match(reviewCount, "^[0-9]+");
-            return re.Value;
+            ///if Selecter Result is NULL
+            if (extractResult == null)
+                return "";
+            else
+                extractString = extractResult.InnerHtml;
+
+            if (REparam == "")
+                return extractString;
+            else {
+                Match re = Regex.Match(extractString, REparam);
+                return re.Value;
+            }
+            
         }
     }
 }
