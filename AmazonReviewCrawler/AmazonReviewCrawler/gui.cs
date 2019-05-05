@@ -27,7 +27,7 @@ namespace AmazonReviewCrawler
             //download target amazon Page
             var clawler = new Crawler(tbProductCode.Text);
             txtWorkStatus.Text = "ページ取得中…";
-            bool bResult = await Task<bool>.Run(() => clawler.GetPageHTML());
+            bool bResult = await Task<bool>.Run(() => clawler.GetPageHTML(clawler.strBasePageURL));
             if (bResult == false)
             {
                 MessageBox.Show("商品コードのページが存在しません");
@@ -57,6 +57,24 @@ namespace AmazonReviewCrawler
             {
                 string[] itemData = { "★" + i.ToString(), dicReviewStarCount[i] };
                 lvReviewCount.Items.Add(new ListViewItem(itemData));
+            }
+
+            //Extract Review Content
+            txtWorkStatus.Text = "レビュー詳細取得中…";
+            var reviewDatas = new List<ReviewData>();
+            reviewDatas = await Task<List<ReviewData>>.Run(() => clawler.GetReviewContent());
+            if (reviewDatas.Count == 0)
+            {
+                txtWorkStatus.Text = "レビューが0件か取得出来ませんでした";
+                return;
+            }
+            else
+            {
+                foreach (ReviewData data in reviewDatas)
+                {
+                    string[] itemData = { data.name, data.star.ToString(), data.title, data.content };
+                    lvReviewDetail.Items.Add(new ListViewItem(itemData));
+                }
             }
         }
 

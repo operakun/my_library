@@ -37,8 +37,15 @@
             this.columnDataName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnDataValue = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.txtWorkStatus = new System.Windows.Forms.Label();
+            this.gbReviewDetail = new System.Windows.Forms.GroupBox();
+            this.lvReviewDetail = new System.Windows.Forms.ListView();
+            this.chName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chStar = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chContent = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.gbInput.SuspendLayout();
             this.gbReviewCount.SuspendLayout();
+            this.gbReviewDetail.SuspendLayout();
             this.SuspendLayout();
             // 
             // tbProductCode
@@ -119,10 +126,51 @@
             this.txtWorkStatus.TabIndex = 5;
             this.txtWorkStatus.Text = "待機中";
             // 
+            // gbReviewDetail
+            // 
+            this.gbReviewDetail.Controls.Add(this.lvReviewDetail);
+            this.gbReviewDetail.Location = new System.Drawing.Point(154, 82);
+            this.gbReviewDetail.Name = "gbReviewDetail";
+            this.gbReviewDetail.Size = new System.Drawing.Size(385, 172);
+            this.gbReviewDetail.TabIndex = 6;
+            this.gbReviewDetail.TabStop = false;
+            this.gbReviewDetail.Text = "レビュー詳細";
+            // 
+            // lvReviewDetail
+            // 
+            this.lvReviewDetail.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.chName,
+            this.chStar,
+            this.chTitle,
+            this.chContent});
+            this.lvReviewDetail.Location = new System.Drawing.Point(0, 18);
+            this.lvReviewDetail.Name = "lvReviewDetail";
+            this.lvReviewDetail.Size = new System.Drawing.Size(379, 146);
+            this.lvReviewDetail.TabIndex = 0;
+            this.lvReviewDetail.UseCompatibleStateImageBehavior = false;
+            this.lvReviewDetail.View = System.Windows.Forms.View.Details;
+            // 
+            // chName
+            // 
+            this.chName.Text = "名前";
+            // 
+            // chStar
+            // 
+            this.chStar.Text = "★";
+            // 
+            // chTitle
+            // 
+            this.chTitle.Text = "タイトル";
+            // 
+            // chContent
+            // 
+            this.chContent.Text = "内容";
+            // 
             // gui
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.gbReviewDetail);
             this.Controls.Add(this.txtWorkStatus);
             this.Controls.Add(this.gbReviewCount);
             this.Controls.Add(this.gbInput);
@@ -131,6 +179,7 @@
             this.gbInput.ResumeLayout(false);
             this.gbInput.PerformLayout();
             this.gbReviewCount.ResumeLayout(false);
+            this.gbReviewDetail.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -147,5 +196,11 @@
         private System.Windows.Forms.ColumnHeader columnDataName;
         private System.Windows.Forms.ColumnHeader columnDataValue;
         private System.Windows.Forms.Label txtWorkStatus;
+        private System.Windows.Forms.GroupBox gbReviewDetail;
+        private System.Windows.Forms.ListView lvReviewDetail;
+        private System.Windows.Forms.ColumnHeader chName;
+        private System.Windows.Forms.ColumnHeader chStar;
+        private System.Windows.Forms.ColumnHeader chTitle;
+        private System.Windows.Forms.ColumnHeader chContent;
     }
 }
